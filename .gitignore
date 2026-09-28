@@ -1,0 +1,55 @@
+# Environments & Virtual Envs
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Secrets & Environment variables
+.env
+.env.*
+!.env.example
+secrets.json
+
+# Local Databases & Vector Stores
+*.db
+*.sqlite3
+chroma_data/
+vector_store/
+
+# IDE & OS specifics
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Workspace Specific Exclusions
+Antigravity IDE/
+*.exe
+*.dll

@@ -1,0 +1,35 @@
+# Core Framework & Server
+fastapi>=0.110.0
+uvicorn[standard]>=0.28.0
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+python-multipart>=0.0.9
+websockets>=12.0
+
+# AI & LLM Engine (Google Gemini Free Tier / Pro)
+google-genai>=0.1.1
+google-generativeai>=0.8.0
+
+# Voice Processing (100% Free & Neural Quality)
+edge-tts>=6.1.12
+SpeechRecognition>=3.10.1
+pyaudio>=0.2.14
+
+# Browser Automation & Web Scraping
+playwright>=1.42.0
+beautifulsoup4>=4.12.3
+requests>=2.31.0
+feedparser>=6.0.11
+duckduckgo-search>=5.0.0
+
+# Database & Memory
+SQLAlchemy>=2.0.28
+aiosqlite>=0.20.0
+chromadb>=0.4.24
+
+# Security & Utilities
+bcrypt>=4.1.2
+python-dotenv>=1.0.1
+psutil>=5.9.8
+aiofiles>=23.2.1
+colorama>=0.4.6
