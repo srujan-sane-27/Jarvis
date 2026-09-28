@@ -464,13 +464,30 @@ document.addEventListener('DOMContentLoaded', () => {
       authStatusBadge.classList.add('unlocked');
       authActionLabel.innerText = 'Lock System';
       authIcon.innerText = '🔓';
+      try { localStorage.setItem('jarvis_unlocked', 'true'); } catch (e) {}
     } else {
       authStatusBadge.innerText = 'LOCKED';
       authStatusBadge.classList.remove('unlocked');
       authActionLabel.innerText = 'Unlock JARVIS';
       authIcon.innerText = '🔒';
+      try { localStorage.setItem('jarvis_unlocked', 'false'); } catch (e) {}
     }
   }
+
+  async function checkInitialStatus() {
+    try {
+      const res = await fetch('/api/status');
+      const data = await res.json();
+      if (data && data.unlocked !== undefined) {
+        updateAuthBadge(data.unlocked);
+      }
+    } catch (e) {
+      if (localStorage.getItem('jarvis_unlocked') === 'true') {
+        updateAuthBadge(true);
+      }
+    }
+  }
+  checkInitialStatus();
 
   function sendCommand(text) {
     if (!text.trim()) return;

@@ -2,6 +2,7 @@ import os
 import subprocess
 import asyncio
 import logging
+import re
 import urllib.parse
 from typing import Optional
 import requests
@@ -74,12 +75,26 @@ class ChromeTool(BaseTool):
             return f"Opening '{url}' in browser, Boss."
 
     async def search_youtube(self, query: str) -> str:
-        """Searches YouTube and opens the results directly in Chrome."""
+        """Searches YouTube, extracts the top video, and plays it directly in Chrome with autoplay."""
         q = query.strip()
         encoded = urllib.parse.quote_plus(q)
-        url = f"https://www.youtube.com/results?search_query={encoded}"
-        await self.launch_chrome_url(url)
-        return f"Searching YouTube for '{q}' in Google Chrome, Boss."
+        search_url = f"https://www.youtube.com/results?search_query={encoded}"
+
+        target_url = search_url
+        try:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+            resp = await asyncio.to_thread(requests.get, search_url, headers=headers, timeout=5)
+            matches = re.findall(r"watch\?v=([a-zA-Z0-9_-]{11})", resp.text)
+            if matches:
+                video_id = matches[0]
+                target_url = f"https://www.youtube.com/watch?v={video_id}&autoplay=1"
+        except Exception as e:
+            logger.warning(f"Could not extract direct YouTube video ID: {e}")
+
+        await self.launch_chrome_url(target_url)
+        return f"Playing '{q}' directly on YouTube in Chrome for you, Boss."
 
     async def search_google(self, query: str) -> str:
         """Searches Google and opens the results directly in Chrome."""
