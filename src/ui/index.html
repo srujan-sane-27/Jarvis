@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS // Autonomous AI Protocol</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/hud.css">
+</head>
+<body>
+  <div class="hud-background">
+    <div class="grid-overlay"></div>
+    <div class="radial-glow"></div>
+  </div>
+
+  <main class="hud-container">
+    <!-- Top System Header Bar -->
+    <header class="hud-header">
+      <div class="system-brand">
+        <div class="pulse-indicator"></div>
+        <div>
+          <h1 class="brand-title">J.A.R.V.I.S.</h1>
+          <span class="system-subtitle">MARK VII // MULTI-AGENT CORE</span>
+        </div>
+      </div>
+
+      <div class="system-telemetry-pill">
+        <div class="pill-item">
+          <span class="label">MODEL</span>
+          <span class="val" id="telemetry-model">GEMINI 2.5</span>
+        </div>
+        <div class="pill-divider"></div>
+        <div class="pill-item">
+          <span class="label">VOICE</span>
+          <span class="val" id="telemetry-voice">EDGE-NEURAL</span>
+        </div>
+        <div class="pill-divider"></div>
+        <div class="pill-item">
+          <span class="label">STATUS</span>
+          <span class="val status-indicator" id="auth-status-badge">LOCKED</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Center Interactive Core Orb & Visualizer -->
+    <section class="core-section">
+      <div class="arc-reactor-wrapper" id="reactor-container">
+        <div class="ring outer-ring"></div>
+        <div class="ring middle-ring"></div>
+        <div class="ring inner-ring"></div>
+        <div class="core-orb" id="core-orb">
+          <div class="core-symbol">⚡</div>
+        </div>
+        <canvas id="waveform-canvas" width="340" height="340"></canvas>
+      </div>
+
+      <div class="voice-state-banner">
+        <span class="state-prefix">SYSTEM STATE:</span>
+        <span class="state-text" id="status-text">INITIALIZING PROTOCOLS...</span>
+      </div>
+    </section>
+
+    <!-- Grid of Quick Action Protocol Tiles -->
+    <section class="quick-actions-bar">
+      <button class="action-card" id="btn-quick-status" title="System Telemetry">
+        <span class="action-icon">💻</span>
+        <div class="action-info">
+          <span class="action-name">System Health</span>
+          <span class="action-desc">CPU, RAM & Power</span>
+        </div>
+      </button>
+
+      <button class="action-card" id="btn-quick-mail" title="Check Unread Mail">
+        <span class="action-icon">📬</span>
+        <div class="action-info">
+          <span class="action-name">Check Inbox</span>
+          <span class="action-desc">sanesrujan84</span>
+        </div>
+      </button>
+
+      <button class="action-card" id="btn-quick-news" title="Tech News Briefing">
+        <span class="action-icon">📰</span>
+        <div class="action-info">
+          <span class="action-name">Tech Briefing</span>
+          <span class="action-desc">Live RSS Stream</span>
+        </div>
+      </button>
+
+      <button class="action-card" id="btn-quick-weather" title="Weather Report">
+        <span class="action-icon">🌦️</span>
+        <div class="action-info">
+          <span class="action-name">Weather</span>
+          <span class="action-desc">Local Telemetry</span>
+        </div>
+      </button>
+
+      <button class="action-card lock-card" id="btn-quick-auth" title="Voice Passcode Authentication">
+        <span class="action-icon" id="auth-icon">🔒</span>
+        <div class="action-info">
+          <span class="action-name" id="auth-action-label">Unlock JARVIS</span>
+          <span class="action-desc" id="auth-action-sub">Speak Security Code</span>
+        </div>
+      </button>
+    </section>
+
+    <!-- Console Log & Terminal Feed -->
+    <section class="terminal-section">
+      <div class="terminal-header">
+        <span class="terminal-title">LIVE TELEMETRY & COMMAND STREAM</span>
+        <button class="clear-terminal-btn" id="btn-clear-log">CLEAR CONSOLE</button>
+      </div>
+      <div class="terminal-feed" id="terminal-feed">
+        <div class="feed-entry system-entry">
+          <span class="entry-time">[00:00:00]</span>
+          <span class="entry-tag">[SYSTEM]</span>
+          <span class="entry-msg">JARVIS Core Engine loaded. Voice security gate engaged. Speak or enter your voice passcode to authorize access.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Command Input Dock -->
+    <footer class="hud-footer">
+      <form class="command-form" id="command-form">
+        <button type="button" class="mic-toggle-btn" id="btn-mic" title="Voice Input (Speech-to-Text)">
+          <span class="mic-icon">🎙️</span>
+        </button>
+        <input 
+          type="text" 
+          id="command-input" 
+          class="command-input" 
+          placeholder="Speak or type a command... (e.g., 'omega-protocol-9' to unlock, or 'system status')"
+          autocomplete="off"
+        />
+        <button type="submit" class="send-btn" id="btn-send">
+          TRANSMIT
+        </button>
+      </form>
+    </footer>
+  </main>
+
+  <audio id="audio-player" style="display: none;"></audio>
+  <script src="/static/js/visualizer.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
