@@ -21,6 +21,11 @@ class MailTool(BaseTool):
     def __init__(self):
         self.settings = get_settings()
 
+    def get_active_settings(self):
+        """Always re-reads settings to pick up live .env updates immediately."""
+        from src.config import Settings
+        return Settings()
+
     def _decode_header_str(self, header_val: str) -> str:
         """Safely decodes email headers."""
         if not header_val:
@@ -39,7 +44,8 @@ class MailTool(BaseTool):
 
     async def fetch_unread_emails(self, limit: int = 5) -> str:
         """Fetches recent unread emails using IMAP."""
-        if not self.settings.EMAIL_APP_PASSWORD:
+        settings = self.get_active_settings()
+        if not settings.EMAIL_APP_PASSWORD:
             return (
                 "Mail access notice: EMAIL_APP_PASSWORD is not configured in .env. "
                 "To enable live inbox reading for sanesrujan84@gmail.com, generate a Google App Password "
@@ -48,8 +54,8 @@ class MailTool(BaseTool):
 
         try:
             # Connect to IMAP
-            mail = imaplib.IMAP4_SSL(self.settings.EMAIL_IMAP_SERVER, self.settings.EMAIL_IMAP_PORT)
-            mail.login(self.settings.EMAIL_USER, self.settings.EMAIL_APP_PASSWORD)
+            mail = imaplib.IMAP4_SSL(settings.EMAIL_IMAP_SERVER, settings.EMAIL_IMAP_PORT)
+            mail.login(settings.EMAIL_USER, settings.EMAIL_APP_PASSWORD.replace(" ", ""))
             mail.select("inbox")
 
             status, response = mail.search(None, "UNSEEN")

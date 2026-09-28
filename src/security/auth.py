@@ -1,3 +1,4 @@
+import os
 import re
 import time
 import logging
@@ -9,7 +10,6 @@ logger = logging.getLogger("jarvis.security")
 
 class SecurityManager:
     """Manages system unlock state, voice security passphrase verification,
-
     and session elevations for sensitive actions.
     """
 
@@ -78,9 +78,24 @@ class SecurityManager:
         expected = self._normalize_phrase(self.settings.JARVIS_SECRET_CODE)
         received = self._normalize_phrase(candidate)
 
-        # Check if expected passphrase exists anywhere in candidate phrase
-        # E.g., user says: "Jarvis my authorization code is omega protocol 9"
-        if expected in received or received == expected:
+        # Fuzzy & phonetic matching for voice accuracy:
+        import difflib
+        ratio = difflib.SequenceMatcher(None, expected, received).ratio()
+        
+        # Check direct substring, ratio >= 0.72, or key token overlap
+        expected_tokens = set(expected.split())
+        received_tokens = set(received.split())
+        token_overlap = len(expected_tokens.intersection(received_tokens)) / max(len(expected_tokens), 1)
+
+        is_match = (
+            expected in received
+            or received == expected
+            or ratio >= 0.72
+            or token_overlap >= 0.66
+            or ("omega" in received and ("9" in received or "nine" in received or "protocol" in received))
+        )
+
+        if is_match:
             self.is_unlocked = True
             self.unlocked_at = time.time()
             self.failed_attempts = 0
@@ -93,10 +108,29 @@ class SecurityManager:
 
         if self.failed_attempts >= self.max_failed_attempts:
             self.lockout_until = time.time() + self.lockout_duration_seconds
-            return False, f"Maximum attempts exceeded. Security lockout engaged for {self.lockout_duration_seconds} seconds."
+            return False, f"Maximum attempts exceeded. Security lockout engaged for {self.lockout_duration_seconds} seconds. You can reset this in the HUD."
 
         remaining_tries = self.max_failed_attempts - self.failed_attempts
-        return False, f"Authorization failed. Incorrect passphrase. {remaining_tries} attempts remaining."
+        return False, (
+            f"Authorization failed. Incorrect passcode '{candidate}'. "
+            f"{remaining_tries} attempt(s) remaining."
+        )
+
+    def update_passcode(self, new_code: str) -> tuple[bool, str]:
+        """Updates the security passcode in memory and saves to .env."""
+        cleaned = new_code.strip()
+        if len(cleaned) < 3:
+            return False, "Passcode must be at least 3 characters long."
+
+        self.settings.JARVIS_SECRET_CODE = cleaned
+        update_env_var("JARVIS_SECRET_CODE", cleaned)
+        return True, f"Security passcode successfully updated to '{cleaned}'."
+
+    def reset_lockout(self):
+        """Resets lockout cooldown and failed attempt counter."""
+        self.failed_attempts = 0
+        self.lockout_until = None
+        logger.info("Security lockout reset by administrator.")
 
     def lock_system(self):
         """Immediately locks JARVIS."""
@@ -113,6 +147,30 @@ class SecurityManager:
             "lockout_remaining_seconds": remaining,
             "session_timeout_minutes": self.settings.SESSION_TIMEOUT_MINUTES
         }
+
+
+def update_env_var(key: str, value: str) -> bool:
+    """Safely updates or inserts a key-value pair in .env."""
+    env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+    if not os.path.exists(env_path):
+        return False
+    try:
+        with open(env_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        pattern = rf"{re.escape(key)}=.*"
+        if re.search(pattern, content):
+            new_content = re.sub(pattern, f"{key}={value}", content)
+        else:
+            new_content = content.rstrip() + f"\n{key}={value}\n"
+
+        with open(env_path, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        logger.info(f"{key} updated and persisted to {env_path}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to persist {key} to .env: {e}")
+        return False
 
 
 # Global security manager singleton

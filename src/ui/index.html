@@ -41,6 +41,11 @@
           <span class="label">STATUS</span>
           <span class="val status-indicator" id="auth-status-badge">LOCKED</span>
         </div>
+        <div class="pill-divider"></div>
+        <div class="pill-item" id="btn-toggle-continuous" style="cursor: pointer;" title="Toggle 2-Way Hands-Free Conversation">
+          <span class="label">2-WAY</span>
+          <span class="val status-indicator" id="continuous-mode-badge" style="color: var(--neon-cyan); border-color: var(--border-cyan);">CLICK TO ENGAGE</span>
+        </div>
       </div>
     </header>
 
@@ -109,7 +114,11 @@
     <section class="terminal-section">
       <div class="terminal-header">
         <span class="terminal-title">LIVE TELEMETRY & COMMAND STREAM</span>
-        <button class="clear-terminal-btn" id="btn-clear-log">CLEAR CONSOLE</button>
+        <div style="display: flex; gap: 0.75rem;">
+          <button class="clear-terminal-btn" id="btn-open-email-modal" title="Configure Gmail App Password">✉️ SET GMAIL PASSWORD</button>
+          <button class="clear-terminal-btn" id="btn-open-passcode-modal" title="Change Voice Security Passcode">⚙️ SET VOICE CODE</button>
+          <button class="clear-terminal-btn" id="btn-clear-log">CLEAR CONSOLE</button>
+        </div>
       </div>
       <div class="terminal-feed" id="terminal-feed">
         <div class="feed-entry system-entry">
@@ -123,8 +132,11 @@
     <!-- Bottom Command Input Dock -->
     <footer class="hud-footer">
       <form class="command-form" id="command-form">
-        <button type="button" class="mic-toggle-btn" id="btn-mic" title="Voice Input (Speech-to-Text)">
+        <button type="button" class="mic-toggle-btn" id="btn-mic" title="Browser Voice Input (Click to speak)">
           <span class="mic-icon">🎙️</span>
+        </button>
+        <button type="button" class="mic-toggle-btn" id="btn-hardware-mic" title="Hardware Mic (Direct Realtek Array / Local Python)">
+          <span class="mic-icon">🎧</span>
         </button>
         <input 
           type="text" 
@@ -139,6 +151,52 @@
       </form>
     </footer>
   </main>
+
+  <!-- Voice Passcode Configuration Modal -->
+  <div class="modal-overlay" id="passcode-modal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>🔐</span>
+        <span>CONFIGURE VOICE PASSCODE</span>
+      </div>
+      <p class="modal-desc">
+        Set your custom spoken security passphrase. JARVIS will require you to speak or type this code to unlock the system and authorize actions. This is stored securely in your local <code>.env</code> file.
+      </p>
+      <input 
+        type="text" 
+        id="modal-passcode-input" 
+        class="modal-input" 
+        placeholder="Enter new voice passphrase (e.g., iron man, omega-protocol-9)"
+      />
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="btn-cancel-passcode">CANCEL</button>
+        <button type="button" class="btn-primary" id="btn-save-passcode">SAVE PASSCODE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gmail App Password Modal -->
+  <div class="modal-overlay" id="email-modal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span>✉️</span>
+        <span>CONFIGURE GMAIL APP PASSWORD</span>
+      </div>
+      <p class="modal-desc">
+        Enter the 16-character Google App Password generated at <code>myaccount.google.com/apppasswords</code> for <code>sanesrujan84@gmail.com</code>. This will be securely saved into your local <code>.env</code> file.
+      </p>
+      <input 
+        type="text" 
+        id="modal-email-password-input" 
+        class="modal-input" 
+        placeholder="Enter 16-letter App Password (e.g. abcd efgh ijkl mnop)"
+      />
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="btn-cancel-email">CANCEL</button>
+        <button type="button" class="btn-primary" id="btn-save-email">SAVE GMAIL PASSWORD</button>
+      </div>
+    </div>
+  </div>
 
   <audio id="audio-player" style="display: none;"></audio>
   <script src="/static/js/visualizer.js"></script>

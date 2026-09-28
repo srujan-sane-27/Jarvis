@@ -27,7 +27,24 @@ def test_passcode_verification():
     assert not sec.is_session_active()
 
 
+def test_update_passcode():
+    sec = SecurityManager()
+    success, msg = sec.update_passcode("iron man")
+    assert success
+    assert sec.settings.JARVIS_SECRET_CODE == "iron man"
+    
+    # Test unlocking with new code
+    v_success, v_msg = sec.verify_passcode("iron man")
+    assert v_success
+    assert sec.is_session_active()
+
+    # Revert back to omega-protocol-9 for default compatibility
+    sec.update_passcode("omega-protocol-9")
+    sec.lock_system()
+
+
 if __name__ == "__main__":
     test_phrase_normalization()
     test_passcode_verification()
+    test_update_passcode()
     print("Security unit tests passed successfully!")
